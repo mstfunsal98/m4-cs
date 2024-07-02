@@ -34,16 +34,6 @@ th {
     position: relative;
 }
 
-th .resizer {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 5px;
-    height: 100%;
-    cursor: col-resize;
-    background-color: #000;
-}
-
 td[contenteditable="true"] {
     background-color: #fff;
 }
