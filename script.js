@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     addColumnBtn.addEventListener('click', () => {
-        // Add column to header
         const header = table.rows[0];
         const headerCell = document.createElement('th');
         headerCell.contentEditable = "true";
@@ -34,30 +33,29 @@ document.addEventListener('DOMContentLoaded', () => {
         headerCell.style.padding = "10px";
         headerCell.style.backgroundColor = "#f0f0f0";
         headerCell.style.position = "relative";
-        
-        // Add width adjust buttons
+
+        const columnIndex = header.cells.length;
+
+        const headerButtons = document.createElement('div');
+        headerButtons.className = 'header-buttons';
         const increaseBtn = document.createElement('button');
         increaseBtn.textContent = '>';
-        increaseBtn.style.position = 'absolute';
-        increaseBtn.style.right = '10px';
-        increaseBtn.style.top = '50%';
-        increaseBtn.style.transform = 'translateY(-50%)';
-        increaseBtn.addEventListener('click', () => adjustColumnWidth(headerCell, 10));
+        increaseBtn.dataset.index = columnIndex;
+        increaseBtn.addEventListener('click', () => adjustColumnWidth(columnIndex, 10));
         
         const decreaseBtn = document.createElement('button');
         decreaseBtn.textContent = '<';
-        decreaseBtn.style.position = 'absolute';
-        decreaseBtn.style.left = '10px';
-        decreaseBtn.style.top = '50%';
-        decreaseBtn.style.transform = 'translateY(-50%)';
-        decreaseBtn.addEventListener('click', () => adjustColumnWidth(headerCell, -10));
+        decreaseBtn.dataset.index = columnIndex;
+        decreaseBtn.addEventListener('click', () => adjustColumnWidth(columnIndex, -10));
         
-        headerCell.appendChild(increaseBtn);
-        headerCell.appendChild(decreaseBtn);
-        
+        headerButtons.appendChild(increaseBtn);
+        headerButtons.appendChild(decreaseBtn);
+
+        headerCell.appendChild(headerButtons);
+        headerCell.appendChild(document.createTextNode('Başlık ' + (columnIndex + 1)));
+
         header.appendChild(headerCell);
 
-        // Add column to each row
         for (let i = 1; i < table.rows.length; i++) {
             const row = table.rows[i];
             const cell = document.createElement('td');
@@ -99,14 +97,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function adjustColumnWidth(headerCell, amount) {
-        const colIndex = Array.from(headerCell.parentElement.children).indexOf(headerCell);
+    function adjustColumnWidth(colIndex, amount) {
         table.querySelectorAll(`tr`).forEach(row => {
-            row.cells[colIndex].style.width = `${(row.cells[colIndex].offsetWidth || 100) + amount}px`;
+            const cell = row.cells[colIndex];
+            const newWidth = (cell.offsetWidth || 100) + amount;
+            cell.style.width = `${newWidth}px`;
         });
     }
 
-    // Load saved data
     const savedData = JSON.parse(localStorage.getItem('spreadsheetData'));
     if (savedData) {
         for (let i = 0; i < savedData.length; i++) {
@@ -118,25 +116,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Add width adjust buttons to existing header cells
-    document.querySelectorAll('th').forEach(th => {
+    document.querySelectorAll('th').forEach((th, index) => {
+        const headerButtons = document.createElement('div');
+        headerButtons.className = 'header-buttons';
         const increaseBtn = document.createElement('button');
         increaseBtn.textContent = '>';
-        increaseBtn.style.position = 'absolute';
-        increaseBtn.style.right = '10px';
-        increaseBtn.style.top = '50%';
-        increaseBtn.style.transform = 'translateY(-50%)';
-        increaseBtn.addEventListener('click', () => adjustColumnWidth(th, 10));
+        increaseBtn.dataset.index = index;
+        increaseBtn.addEventListener('click', () => adjustColumnWidth(index, 10));
         
         const decreaseBtn = document.createElement('button');
         decreaseBtn.textContent = '<';
-        decreaseBtn.style.position = 'absolute';
-        decreaseBtn.style.left = '10px';
-        decreaseBtn.style.top = '50%';
-        decreaseBtn.style.transform = 'translateY(-50%)';
-        decreaseBtn.addEventListener('click', () => adjustColumnWidth(th, -10));
+        decreaseBtn.dataset.index = index;
+        decreaseBtn.addEventListener('click', () => adjustColumnWidth(index, -10));
         
-        th.appendChild(increaseBtn);
-        th.appendChild(decreaseBtn);
+        headerButtons.appendChild(increaseBtn);
+        headerButtons.appendChild(decreaseBtn);
+
+        th.insertBefore(headerButtons, th.firstChild);
     });
 });
