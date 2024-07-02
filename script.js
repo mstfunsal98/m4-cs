@@ -27,14 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     addColumnBtn.addEventListener('click', () => {
         const header = table.rows[0];
+        const columnIndex = header.cells.length;
+
         const headerCell = document.createElement('th');
         headerCell.contentEditable = "true";
         headerCell.style.border = "1px solid #ddd";
         headerCell.style.padding = "10px";
         headerCell.style.backgroundColor = "#f0f0f0";
         headerCell.style.position = "relative";
-
-        const columnIndex = header.cells.length;
 
         const headerButtons = document.createElement('div');
         headerButtons.className = 'header-buttons';
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function adjustColumnWidth(colIndex, amount) {
-        table.querySelectorAll(`tr`).forEach(row => {
+        table.querySelectorAll('tr').forEach(row => {
             const cell = row.cells[colIndex];
             const newWidth = (cell.offsetWidth || 100) + amount;
             cell.style.width = `${newWidth}px`;
