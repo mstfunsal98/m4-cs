@@ -38,18 +38,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const headerButtons = document.createElement('div');
         headerButtons.className = 'header-buttons';
-        const increaseBtn = document.createElement('button');
-        increaseBtn.textContent = '>';
-        increaseBtn.dataset.index = columnIndex;
-        increaseBtn.addEventListener('click', () => adjustColumnWidth(columnIndex, 10));
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'x';
+        deleteBtn.dataset.index = columnIndex;
+        deleteBtn.addEventListener('click', () => deleteColumn(columnIndex));
         
-        const decreaseBtn = document.createElement('button');
-        decreaseBtn.textContent = '<';
-        decreaseBtn.dataset.index = columnIndex;
-        decreaseBtn.addEventListener('click', () => adjustColumnWidth(columnIndex, -10));
-        
-        headerButtons.appendChild(increaseBtn);
-        headerButtons.appendChild(decreaseBtn);
+        headerButtons.appendChild(deleteBtn);
 
         headerCell.appendChild(headerButtons);
         headerCell.appendChild(document.createTextNode('Başlık ' + (columnIndex + 1)));
@@ -65,6 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
             cell.addEventListener('click', selectCell);
             row.appendChild(cell);
         }
+
+        updateHeaderButtons();
     });
 
     boldTextBtn.addEventListener('click', () => {
@@ -97,11 +94,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function adjustColumnWidth(colIndex, amount) {
+    function deleteColumn(colIndex) {
         table.querySelectorAll('tr').forEach(row => {
-            const cell = row.cells[colIndex];
-            const newWidth = (cell.offsetWidth || 100) + amount;
-            cell.style.width = `${newWidth}px`;
+            row.deleteCell(colIndex);
+        });
+        updateHeaderButtons();
+    }
+
+    function updateHeaderButtons() {
+        document.querySelectorAll('th').forEach((th, index) => {
+            const headerButtons = th.querySelector('.header-buttons');
+            if (headerButtons) {
+                headerButtons.querySelector('.delete-column').dataset.index = index;
+            }
         });
     }
 
@@ -119,18 +124,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('th').forEach((th, index) => {
         const headerButtons = document.createElement('div');
         headerButtons.className = 'header-buttons';
-        const increaseBtn = document.createElement('button');
-        increaseBtn.textContent = '>';
-        increaseBtn.dataset.index = index;
-        increaseBtn.addEventListener('click', () => adjustColumnWidth(index, 10));
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'x';
+        deleteBtn.dataset.index = index;
+        deleteBtn.addEventListener('click', () => deleteColumn(index));
         
-        const decreaseBtn = document.createElement('button');
-        decreaseBtn.textContent = '<';
-        decreaseBtn.dataset.index = index;
-        decreaseBtn.addEventListener('click', () => adjustColumnWidth(index, -10));
-        
-        headerButtons.appendChild(increaseBtn);
-        headerButtons.appendChild(decreaseBtn);
+        headerButtons.appendChild(deleteBtn);
 
         th.insertBefore(headerButtons, th.firstChild);
     });
