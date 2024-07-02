@@ -7,6 +7,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const table = document.getElementById('spreadsheet');
     
     let selectedCells = [];
+    let isResizing = false;
+    let startX;
+    let startWidth;
+    let resizableTh;
+
+    function createResizer(th) {
+        const resizer = document.createElement('div');
+        resizer.className = 'resizer';
+        th.appendChild(resizer);
+        
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            startX = e.clientX;
+            startWidth = th.offsetWidth;
+            resizableTh = th;
+
+            document.addEventListener('mousemove', resizeColumn);
+            document.addEventListener('mouseup', stopResize);
+        });
+    }
+
+    function resizeColumn(e) {
+        if (isResizing) {
+            const newWidth = startWidth + (e.clientX - startX);
+            resizableTh.style.width = `${newWidth}px`;
+        }
+    }
+
+    function stopResize() {
+        isResizing = false;
+        document.removeEventListener('mousemove', resizeColumn);
+        document.removeEventListener('mouseup', stopResize);
+    }
+
+    document.querySelectorAll('th').forEach(th => {
+        createResizer(th);
+    });
 
     addRowBtn.addEventListener('click', () => {
         const row = table.insertRow();
@@ -33,6 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
         headerCell.style.border = "1px solid #ddd";
         headerCell.style.padding = "10px";
         headerCell.style.backgroundColor = "#f0f0f0";
+        headerCell.style.position = "relative";
+        createResizer(headerCell);
         header.appendChild(headerCell);
 
         // Add column to each row
