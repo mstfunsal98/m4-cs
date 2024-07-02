@@ -134,4 +134,9 @@ document.addEventListener('DOMContentLoaded', () => {
         decreaseBtn.style.left = '10px';
         decreaseBtn.style.top = '50%';
         decreaseBtn.style.transform = 'translateY(-50%)';
-        decreaseBtn.addEventListener('click', () => adjustColumnWidth
+        decreaseBtn.addEventListener('click', () => adjustColumnWidth(th, -10));
+        
+        th.appendChild(increaseBtn);
+        th.appendChild(decreaseBtn);
+    });
+});
