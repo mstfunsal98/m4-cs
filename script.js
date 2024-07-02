@@ -7,43 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const table = document.getElementById('spreadsheet');
     
     let selectedCells = [];
-    let isResizing = false;
-    let startX;
-    let startWidth;
-    let resizableTh;
-
-    function createResizer(th) {
-        const resizer = document.createElement('div');
-        resizer.className = 'resizer';
-        th.appendChild(resizer);
-        
-        resizer.addEventListener('mousedown', (e) => {
-            isResizing = true;
-            startX = e.clientX;
-            startWidth = th.offsetWidth;
-            resizableTh = th;
-
-            document.addEventListener('mousemove', resizeColumn);
-            document.addEventListener('mouseup', stopResize);
-        });
-    }
-
-    function resizeColumn(e) {
-        if (isResizing) {
-            const newWidth = startWidth + (e.clientX - startX);
-            resizableTh.style.width = `${newWidth}px`;
-        }
-    }
-
-    function stopResize() {
-        isResizing = false;
-        document.removeEventListener('mousemove', resizeColumn);
-        document.removeEventListener('mouseup', stopResize);
-    }
-
-    document.querySelectorAll('th').forEach(th => {
-        createResizer(th);
-    });
 
     addRowBtn.addEventListener('click', () => {
         const row = table.insertRow();
@@ -71,7 +34,27 @@ document.addEventListener('DOMContentLoaded', () => {
         headerCell.style.padding = "10px";
         headerCell.style.backgroundColor = "#f0f0f0";
         headerCell.style.position = "relative";
-        createResizer(headerCell);
+        
+        // Add width adjust buttons
+        const increaseBtn = document.createElement('button');
+        increaseBtn.textContent = '>';
+        increaseBtn.style.position = 'absolute';
+        increaseBtn.style.right = '10px';
+        increaseBtn.style.top = '50%';
+        increaseBtn.style.transform = 'translateY(-50%)';
+        increaseBtn.addEventListener('click', () => adjustColumnWidth(headerCell, 10));
+        
+        const decreaseBtn = document.createElement('button');
+        decreaseBtn.textContent = '<';
+        decreaseBtn.style.position = 'absolute';
+        decreaseBtn.style.left = '10px';
+        decreaseBtn.style.top = '50%';
+        decreaseBtn.style.transform = 'translateY(-50%)';
+        decreaseBtn.addEventListener('click', () => adjustColumnWidth(headerCell, -10));
+        
+        headerCell.appendChild(increaseBtn);
+        headerCell.appendChild(decreaseBtn);
+        
         header.appendChild(headerCell);
 
         // Add column to each row
@@ -116,6 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function adjustColumnWidth(headerCell, amount) {
+        const colIndex = Array.from(headerCell.parentElement.children).indexOf(headerCell);
+        table.querySelectorAll(`tr`).forEach(row => {
+            row.cells[colIndex].style.width = `${(row.cells[colIndex].offsetWidth || 100) + amount}px`;
+        });
+    }
+
     // Load saved data
     const savedData = JSON.parse(localStorage.getItem('spreadsheetData'));
     if (savedData) {
@@ -127,4 +117,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-});
+
+    // Add width adjust buttons to existing header cells
+    document.querySelectorAll('th').forEach(th => {
+        const increaseBtn = document.createElement('button');
+        increaseBtn.textContent = '>';
+        increaseBtn.style.position = 'absolute';
+        increaseBtn.style.right = '10px';
+        increaseBtn.style.top = '50%';
+        increaseBtn.style.transform = 'translateY(-50%)';
+        increaseBtn.addEventListener('click', () => adjustColumnWidth(th, 10));
+        
+        const decreaseBtn = document.createElement('button');
+        decreaseBtn.textContent = '<';
+        decreaseBtn.style.position = 'absolute';
+        decreaseBtn.style.left = '10px';
+        decreaseBtn.style.top = '50%';
+        decreaseBtn.style.transform = 'translateY(-50%)';
+        decreaseBtn.addEventListener('click', () => adjustColumnWidth
